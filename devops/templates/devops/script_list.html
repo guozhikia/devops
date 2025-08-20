@@ -1,0 +1,67 @@
+{% extends "devops/base.html" %}
+
+{% block content %}
+<main>
+  <h2>脚本列表</h2>
+  <h4> <a href="{% url 'create_script' %}" style="color: inherit; text-decoration: none;">创建脚本</a></h4>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>名称</th>
+        <th>内容</th>
+        <th>参数数量</th>
+        <th>脚本类型</th>
+        <th>执行命令</th>
+        <th>创建时间</th>
+        <th>更新时间</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for script in scripts %}
+      <tr>
+        <td>{{ script.name }}</td>
+        <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          {{ script.content|truncatechars:100 }}
+        </td>
+        <td>{{ script.param_count }}</td>
+        <td>{{ script.script_type }}</td>
+        <td>{{ script.exec_cmd }}</td>
+        <td>{{ script.created|date:"Y-m-d H:i" }}</td>
+        <td>{{ script.updated|date:"Y-m-d H:i" }}</td>
+        
+         <td>
+            <form action="{% url 'run_script' script.id %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="submit" value="执行">
+            </form>
+            <form action="{% url 'update_script' script.id %}" style="display: inline;">
+                {% csrf_token %}
+                <input type="submit" value="更新">
+            </form>
+            <form action="{% url 'delete_script' script.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <input class="danger" type="submit" value="删除" onclick="return confirm('确定删除脚本吗?');">
+            </form> 
+          </td>
+    
+           
+
+
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">暂无脚本记录</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+
+  
+</main>
+{% endblock %}
+
+

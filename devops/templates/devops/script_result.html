@@ -1,0 +1,14 @@
+<h2>脚本名称: {{ script.name }}</h2>
+
+<h3>执行结果：</h3>
+<pre>
+返回码: {{ returncode }}
+
+标准输出:
+{{ output }}
+
+标准错误:
+{{ error }}
+</pre>
+
+<a href="{% url 'script_list' %}">返回列表</a>

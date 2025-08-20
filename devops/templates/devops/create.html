@@ -1,0 +1,20 @@
+{% extends 'devops/base.html' %}
+
+{% block title %}
+New Post
+{% endblock %}
+
+{% block header %}
+    <h1>New Post</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <label for="title">Title</label>
+        <input name="title" id="title" placeholder="输入标题"  required>
+        <label for="body">Body</label>
+        <textarea name="body" id="body" placeholder="输入正文"></textarea>
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}

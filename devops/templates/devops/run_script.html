@@ -1,0 +1,42 @@
+{% extends "devops/base.html" %}
+
+{% block content %}
+<main>
+  <h1>执行脚本：{{ script.name }}</h1>
+  <h5>参数示例：
+        {{ script.exec_cmd }}
+    </h5>
+  <form method="post" >
+        {% csrf_token %}
+        {% if script.param_count == 1 %}
+          <label for="param1">参数1</label>
+          <input name="param1" id="param1" value="" required>
+        {% elif script.param_count == 2 %}
+          <label for="param1">参数1</label>
+          <input name="param1" id="param1" value="" required>
+          <label for="param2">参数2</label>
+          <input name="param2" id="param2" value="" required>
+        {% endif %}
+        <input type="submit" value="执行">
+    </form>
+    <form action="{% url 'run_script' script_id=script.id %}" method="post">
+    </form>
+    
+   {% if result %}
+        <h2>脚本输出结果：</h2>
+        <pre>{{ result }}</pre>
+    {% endif %}
+
+    {% if error %}
+        <h2 style="color:red;">执行错误：</h2>
+        <pre>{{ error }}</pre>
+    {% endif %}
+
+
+
+  
+</main>
+{% endblock %}
+
+
+

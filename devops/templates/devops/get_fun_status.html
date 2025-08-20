@@ -1,0 +1,24 @@
+{% extends 'devops/base.html' %}
+
+{% block content %}
+    <h1>执行本地脚本</h1>
+    <h5>参数示例：
+        python3 get_fun_status.py  6888960258f77b7fd672ec84
+    </h5>
+
+    <form method="get" action="{% url 'get_fun_status' %}">
+        <label for="plan_id">请输入plan_id: </label>
+        <input type="text" id="plan_id" name="plan_id" required>
+        <button type="submit">提交</button>
+    </form>
+    
+    {% if result %}
+        <h2>脚本输出结果：</h2>
+        <pre>{{ result }}</pre>
+    {% endif %}
+
+    {% if error %}
+        <h2 style="color:red;">执行错误：</h2>
+        <pre>{{ error }}</pre>
+    {% endif %}
+{% endblock %}

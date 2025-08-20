@@ -1,0 +1,80 @@
+{% extends 'devops/base.html' %}
+
+{% block title %}
+Posts
+{% endblock %}
+
+{% block header %}
+    <h1>Posts</h1>
+    {% if request.session.user_id %}
+        <a class="action" href="{% url 'create' %}">New</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% for post in posts %}
+        <article class="post">
+            <header>
+                <div>
+                    <h1>{{ post.title }}</h1>
+                    <div class="about">by {{ post.author.username }} on {{ post.created|date:"Y-m-d" }}</div>
+                </div>
+                {% if request.session.user_id == post.author.id %}
+                    <a class="action" href="{% url 'update' post_id=post.id %}">Edit</a>
+                {% endif %}
+            </header>
+            <p class="body">{{ post.body }}</p>
+        </article>
+        
+    {% endfor %}
+{% endblock %}
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>登录 - 我的站点</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            width: 360px;
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #4a4a4a;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">欢迎登录</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_username" class="form-label">用户名</label>
+                <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="id_password" class="form-label">密码</label>
+                <input type="password" name="password" autocomplete="current-password" required id="id_password" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">登录</button>
+        </form>
+    </div>
+</body>
+</html>

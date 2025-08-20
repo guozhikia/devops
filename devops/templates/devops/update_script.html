@@ -1,0 +1,32 @@
+{% extends "devops/base.html" %}
+
+{% block content %}
+<main>
+  <h2>更新脚本</h2>
+  <form method="post">
+        {% csrf_token %}
+        <label for="name">名称</label>
+        <input name="name" id="name" value="{{ script.name }}" required>
+        <label for="content">内容</label>
+        <textarea name="content" id="content">{{ script.content }}</textarea>
+        <label for="param_count">参数数量</label>
+        <input name="param_count" id="param_count" value="{{ script.param_count }}" required>
+        <label for="script_type">脚本类型</label>
+        <input name="script_type" id="script_type" value="{{ script.script_type }}" required>
+        <label for="exec_cmd">执行命令</label>
+        <input name="exec_cmd" id="exec_cmd" value="{{ script.exec_cmd }}" required>
+        <input type="submit" value="更新">
+    </form>
+    <form action="{% url 'update_script' script_id=script.id %}" method="post">
+    </form>
+    
+
+
+
+
+  
+</main>
+{% endblock %}
+
+
+

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>自动化运维平台 - 高级版</title>
+  <style>
+    /* 重置和基础 */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      color: #eee;
+      display: flex;
+      flex-direction: row;
+      overflow-x: hidden;
+    }
+    /* 侧边栏 */
+    aside {
+      background: #14272e;
+      width: 280px;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.6);
+      position: fixed;
+      height: 100vh;
+    }
+    aside h1 {
+      font-weight: 900;
+      font-size: 1.75rem;
+      margin-bottom: 2rem;
+      color: #4bd1ff;
+      text-align: center;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px #4bd1ff88;
+    }
+    nav {
+      flex-grow: 1;
+    }
+    nav a {
+      display: block;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      color: #94a3b8;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow:
+        inset 0 0 0 0 #4bd1ff;
+    }
+    nav a:hover,
+    nav a.active {
+      color: #0f2027;
+      background: #4bd1ff;
+      box-shadow:
+        inset 200px 0 0 0 #4bd1ff;
+    }
+
+    /* 头部栏 */
+    header {
+      position: fixed;
+      left: 280px;
+      right: 0;
+      top: 0;
+      height: 60px;
+      background: #1f3649;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+      z-index: 10;
+    }
+    header .welcome {
+      color: #4bd1ff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
+    header button {
+      background: #4bd1ff;
+      border: none;
+      border-radius: 25px;
+      color: #0f2027;
+      font-weight: 700;
+      padding: 0.5rem 1.25rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px #4bd1ffaa;
+      transition: background-color 0.3s ease;
+    }
+    header button:hover {
+      background: #38b6ff;
+      box-shadow: 0 6px 20px #38b6ffcc;
+    }
+
+    /* 主内容 */
+    main {
+      margin-left: 280px;
+      margin-top: 60px;
+      padding: 2.5rem 3rem;
+      flex-grow: 1;
+      overflow-y: auto;
+      min-height: calc(100vh - 60px);
+    }
+    main h2 {
+      font-weight: 900;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #4bd1ff;
+      text-shadow: 0 0 10px #4bd1ff99;
+    }
+    main h3 {
+      font-weight: 900;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #4bd1ff;
+      text-shadow: 0 0 10px #4bd1ff99;
+    }
+
+    /* 卡片容器 */
+    .cards {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    /* 卡片 */
+    .card {
+      flex: 1 1 250px;
+      background: #203a43;
+      border-radius: 20px;
+      padding: 2rem;
+      color: #d3d9e1;
+      box-shadow:
+        8px 8px 20px #15272d,
+        -8px -8px 20px #2c5364;
+      cursor: default;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow:
+        12px 12px 30px #13212a,
+        -12px -12px 30px #3a5c74;
+    }
+    .card h3 {
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      color: #4bd1ff;
+      text-shadow: 0 0 5px #4bd1ffbb;
+    }
+    .card .number {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #87e0fd;
+      text-shadow:
+        0 0 10px #4bd1ffdd,
+        0 0 20px #4bd1ffaa;
+    }
+    /* 不同状态颜色 */
+    .card.success .number {
+      color: #4ee868;
+      text-shadow: 0 0 12px #44c759cc;
+    }
+    .card.warning .number {
+      color: #ffba49;
+      text-shadow: 0 0 10px #ffba4999;
+    }
+    .card.error .number {
+      color: #ff4e42;
+      text-shadow: 0 0 10px #ff4e4288;
+    }
+
+    /* 表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow:
+        6px 6px 20px #15272d,
+        -6px -6px 20px #2c5364;
+      background: #203a43;
+    }
+    thead tr {
+      background: #264a5b;
+      color: #9fbed7;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    th, td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid #2a4554;
+    }
+    tbody tr:hover {
+      background: #2e5872;
+      color: #dff8ff;
+      transition: background 0.3s ease;
+      cursor: default;
+    }
+    /* 状态标签 */
+    .badge {
+      padding: 0.25em 0.75em;
+      border-radius: 1rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      user-select: none;
+    }
+    .badge.info {
+      background-color: #4bd1ff;
+      color: #0f2027;
+      text-shadow: none;
+      box-shadow: 0 0 6px #4bd1ffbb;
+    }
+    .badge.success {
+      background-color: #4ee868;
+      color: #0f2027;
+      box-shadow: 0 0 6px #44c759cc;
+    }
+    .badge.warning {
+      background-color: #ffba49;
+      color: #2c1f00;
+      box-shadow: 0 0 6px #ffba4999;
+    }
+    .badge.error {
+      background-color: #ff4e42;
+      color: #2c0f0b;
+      box-shadow: 0 0 6px #ff4e4288;
+    }
+
+    /* 响应式 */
+    @media (max-width: 960px) {
+      aside {
+        width: 220px;
+      }
+      main {
+        margin-left: 220px;
+        padding: 1.5rem 2rem;
+      }
+    }
+    @media (max-width: 600px) {
+      body {
+        flex-direction: column;
+      }
+      aside {
+        position: relative;
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+        padding: 1rem 1.5rem;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 1rem;
+      }
+      nav a {
+        margin-bottom: 0;
+        padding: 0.6rem 1rem;
+        white-space: nowrap;
+      }
+      header {
+        position: relative;
+        left: 0;
+        padding: 1rem 1.5rem;
+        justify-content: center;
+      }
+      main {
+        margin: 0;
+        padding: 1.5rem 1.5rem 3rem;
+      }
+      .cards {
+        flex-direction: column;
+      }
+      .card {
+        flex: 1 1 auto;
+        margin-bottom: 1.5rem;
+      }
+    }
+    .submenu > a {
+        font-weight: 700;
+        color: #7ec8ff;
+        cursor: pointer;
+        margin-bottom: 0.5rem;
+        user-select: none;
+        display: block;
+        }
+    .submenu-items a {
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+      display: block;
+      padding-left: 0.5rem;
+      border-left: 2px solid transparent;
+      transition: border-color 0.3s, color 0.3s;
+      cursor: pointer;
+    }
+    .submenu-items a {
+        font-weight: 500;
+        color: #94a3b8;
+        margin-bottom: 0.5rem;
+        display: block;
+        padding-left: 0.5rem;
+        border-left: 2px solid transparent;
+        transition: border-color 0.3s, color 0.3s;
+        cursor: pointer;
+    }
+    .submenu-items a:hover {
+        border-left-color: #4bd1ff;
+        color: #4bd1ff;
+    }
+  </style>
+</head>
+<body>
+
+  <aside>
+    <h1>运维平台</h1>
+    <nav>
+        <a href="#" class="active">仪表盘</a>
+        <a href="#">服务器管理</a>
+        <a href="#">任务调度</a>
+        <a href="#">日志监控</a>
+        <a href="#">用户权限</a>
+        <a href="#">系统设置</a>
+
+    <div class="submenu">
+        <a href="#" id="execute-script-main">执行脚本 ▾</a>
+        <div class="submenu-items" style="display:none; padding-left: 1rem;">
+        <a href="{% url 'script_list' %}" id="script_list">脚本列表</a>
+        <a href="#" id="exec-status">执行状态</a>
+        </div>
+    </div>
+
+
+    </nav>
+
+  </aside>
+
+  <header>
+    <div class="welcome">欢迎, <strong>Admin</strong></div>
+    <button>退出登录</button>
+  </header>
+
+
+
+    <main>
+        {% block content %}
+        <h2>仪表盘</h2>
+
+        <div class="cards">
+        <div class="card success">
+            <h3>服务器总数</h3>
+            <div class="number">28</div>
+        </div>
+        <div class="card warning">
+            <h3>运行中的任务</h3>
+            <div class="number">15</div>
+        </div>
+        <div class="card error">
+            <h3>错误警告</h3>
+            <div class="number">2</div>
+        </div>
+        </div>
+
+        <section>
+        <h3 style="color:#4bd1ff; margin-bottom: 1rem; font-weight: 800;">最近日志</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>时间</th>
+                <th>服务器</th>
+                <th>级别</th>
+                <th>消息</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>2025-08-19 09:15</td>
+                <td>server-01</td>
+                <td><span class="badge success">INFO</span></td>
+                <td>任务成功完成</td>
+            </tr>
+            <tr>
+                <td>2025-08-19 08:50</td>
+                <td>server-07</td>
+                <td><span class="badge error">ERROR</span></td>
+                <td>连接超时</td>
+            </tr>
+            <tr>
+                <td>2025-08-18 23:40</td>
+                <td>server-03</td>
+                <td><span class="badge warning">WARNING</span></td>
+                <td>磁盘空间不足</td>
+            </tr>
+            </tbody>
+        </table>
+        </section>
+        {% endblock %}
+    </main>
+
+  <script>
+  const executeMain = document.getElementById('execute-script-main');
+  const submenuItems = executeMain.nextElementSibling;
+
+  executeMain.addEventListener('click', e => {
+    e.preventDefault();
+    if(submenuItems.style.display === 'none') {
+      submenuItems.style.display = 'block';
+    } else {
+      submenuItems.style.display = 'none';
+    }
+  });
+
+  const main = document.querySelector('main');
+
+  // 任务列表页面示例内容
+  const taskListContent = `
+    <h2>任务列表</h2>
+    <p>这里显示所有执行脚本的任务列表。</p>
+    <table>
+      <thead>
+        <tr>
+          <th>任务ID</th><th>名称</th><th>状态</th><th>执行时间</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>脚本A</td><td><span class="badge success">成功</span></td><td>2025-08-19 10:00</td></tr>
+        <tr><td>2</td><td>脚本B</td><td><span class="badge warning">运行中</span></td><td>2025-08-19 10:15</td></tr>
+      </tbody>
+    </table>
+  `;
+
+  // 新建任务页面示例内容
+  const newTaskContent = `
+    <h2>新建任务</h2>
+    <form>
+      <label for="task-name">任务名称：</label><br>
+      <input id="task-name" type="text" placeholder="输入任务名称" required style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;"><br>
+      <label for="script-content">脚本内容：</label><br>
+      <textarea id="script-content" rows="6" style="width: 100%; padding: 0.5rem;" placeholder="输入脚本内容" required></textarea><br><br>
+      <button type="submit" style="background:#4bd1ff;color:#0f2027;padding:0.6rem 1.2rem;border:none;border-radius:6px;cursor:pointer;">提交</button>
+    </form>
+  `;
+
+  // 绑定点击事件切换内容
+  document.getElementById('task-list').addEventListener('click', e => {
+    e.preventDefault();
+    main.innerHTML = taskListContent;
+    setActiveMenu('task-list');
+  });
+
+  document.getElementById('new-task').addEventListener('click', e => {
+    e.preventDefault();
+    main.innerHTML = newTaskContent;
+    setActiveMenu('new-task');
+  });
+
+  function setActiveMenu(id) {
+    // 清除所有激活状态
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    // 设置当前激活
+    document.getElementById(id).classList.add('active');
+    executeMain.classList.add('active'); // 父菜单也激活
+  }
+</script>
+
+
+</body>
+</html>
