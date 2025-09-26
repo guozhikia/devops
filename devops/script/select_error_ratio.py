@@ -70,11 +70,16 @@ class Error_Handler:
             """)
         
         for row in queue_info:
-            if row['isprod'] == 1:
+            #print(row)
+            if row['isprod'] == 1 and 'bvt' not in row['name']:
+            
                 queue_name.append(row['name'])
 
         ## 取出错误信息到list
         for row in error_info:
+            #print(str(row['errormsg']))
+            if "b''" == str(row['errormsg']):
+                continue
             data = json.loads(row['errormsg'])
             error = data['error']
             plan_id = data['plan_id']
